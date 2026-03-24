@@ -5,24 +5,36 @@ import { useRouter } from "next/navigation";
 
 interface LoginForm {
   email: string;
-  password: string;
+  userName: string;
 }
 
 interface FormErrors {
   email?: string;
-  password?: string;
+  userName?: string;
 }
 
 export default function Login() {
-  const [form, setForm] = useState<LoginForm>({ email: "", password: "" });
+  const [form, setForm] = useState<LoginForm>({ email: "", userName: "" });
   const [errors, setErrors] = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-    const router = useRouter()
-
-
+  const router = useRouter()
+  const validation = (): boolean => {
+    const newErrors: FormErrors = {};
+    if (!form.email) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(form.email)) {
+      newErrors.email = "Invalid email format";
+    }
+    if (!form.userName){
+      newErrors.userName = "UserName is required";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!validation()) return;
     setLoading(true);
     try {
       // Replace with your actual login API call
@@ -37,8 +49,8 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-5xl flex-col items-center justify-around py-32 px-16 bg-white dark:bg-black sm:items-start">
+    <div className="flex items-center justify-center bg-zinc-50 font-sans dark:bg-black">
+      <main className="flex w-full max-w-5xl flex-col items-center justify-around py-32 px-16 bg-white dark:bg-black sm:items-start">
 
         {/* Card */}
         <div className="w-full max-w-sm bg-white dark:bg-zinc-900 rounded-lg shadow-md p-8 m-auto items-center">
@@ -50,12 +62,14 @@ export default function Login() {
 
             {/* Email */}
             <div className="flex flex-col gap-1">
+              <div className="flex items-center justify-between">
               <label
                 htmlFor="email"
                 className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
               >
                 Email
               </label>
+              </div>
               <input
                 id="email"
                 type="email"
@@ -77,51 +91,35 @@ export default function Login() {
               )}
             </div>
 
-            {/* Password */}
+            {/* UserName */}
             <div className="flex flex-col gap-1">
               <div className="flex items-center justify-between">
                 <label
-                  htmlFor="password"
+                  htmlFor="userName"
                   className="text-sm font-medium text-zinc-700 dark:text-zinc-300"
                 >
-                  Password
+                  UserName
                 </label>
-                <a
-                  href="/forgot-password"
-                  className="text-xs text-violet-600 hover:text-violet-500 transition"
-                >
-                  Forgot password?
-                </a>
               </div>
               <div className="relative">
                 <input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  value={form.password}
-                  autoComplete="current-password"
+                  id="userName"
+                  value={form.userName}
+                  autoComplete="current-userName"
                   onChange={(e) => {
-                    setForm({ ...form, password: e.target.value });
-                    if (errors.password)
-                      setErrors({ ...errors, password: undefined });
+                    setForm({ ...form, userName: e.target.value });
+                    if (errors.userName)
+                      setErrors({ ...errors, userName: undefined });
                   }}
                   className={`w-full rounded-lg border px-3 py-2 pr-10 text-sm bg-white dark:bg-zinc-900 text-black dark:text-zinc-50 placeholder-zinc-400 outline-none transition focus:ring-2 focus:ring-violet-500 focus:border-transparent ${
-                    errors.password
+                    errors.userName
                       ? "border-red-500"
                       : "border-zinc-300 dark:border-zinc-700"
                   }`}
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 transition text-sm"
-                  aria-label="Toggle password visibility"
-                >
-                  {showPassword ? "🙈" : "👁"}
-                </button>
               </div>
-              {errors.password && (
-                <span className="text-xs text-red-500">{errors.password}</span>
+              {errors.userName && (
+                <span className="text-xs text-red-500">{errors.userName}</span>
               )}
             </div>
 
