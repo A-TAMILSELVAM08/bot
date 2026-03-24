@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import bot from "../../public/BOT.png";
+import bot from "../public/BOT.png";
 import { useRouter } from "next/navigation";
 
 export default function Homepage() {
